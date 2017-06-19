@@ -332,7 +332,6 @@
                 })
             },
             fuckerson(){
-                // Represents an edge from source to sink with capacity
                 var Edge = function(source, sink, capacity) {
                     this.source = source;
                     this.sink = sink;
@@ -341,11 +340,9 @@
                     this.flow = 0;
                 };
 
-                // Main class to manage the network
                 var FlowNetwork = function() {
                     this.edges = {};
 
-                    // Is this edge/residual capacity combination in the path already?
                     this.findEdgeInPath = function(path, edge, residual) {
                         for(var p=0;p<path.length;p++)
                             if(path[p][0] == edge && path[p][1] == residual)
@@ -356,11 +353,10 @@
                     this.addEdge = function(source, sink, capacity) {
                         if(source == sink) return;
 
-                        // Create the two edges = one being the reverse of the other
+                        // Cria duas arestas inclusive ja a inversa.
                         var edge = new Edge(source, sink, capacity);
                         var reverseEdge = new Edge(sink, source, 0);
 
-                        // Make sure we setup the pointer to the reverse edge
                         edge.reverseEdge= reverseEdge;
                         reverseEdge.reverseEdge = edge;
 
@@ -371,7 +367,7 @@
                         this.edges[sink].push(reverseEdge);
                     };
 
-                    // Finds a path from source to sink
+                    // Localiza o caminho no ínicio ao fim
                     this.findPath = function(source, sink, path) {
                         if(source == sink) return path;
 
@@ -379,7 +375,7 @@
                             var edge = this.edges[source][i];
                             var residual = edge.capacity - edge.flow;
 
-                            // If we have capacity and we haven't already visited this edge, visit it
+                            // Se houver peso/capacidade e ainda não foi visiado, ai sim o visita
                             if(residual > 0 && !this.findEdgeInPath(path, edge, residual)) {
                                 var tpath = path.slice(0);
                                 tpath.push([edge, residual]);
@@ -390,16 +386,16 @@
                         return null;
                     };
 
-                    // Find the max flow in this network
+                    // Encontre o fluxo máximo
                     this.maxFlow = function(source, sink) {
                         var path = this.findPath(source, sink, []);
 
                         while(path != null) {
                             var flow = 999999;
-                            // Find the minimum flow
+                            // Encontra o fluxo mínimo
                             for(var i=0;i<path.length;i++)
                                 if(path[i][1] < flow) flow = path[i][1];
-                            // Apply the flow to the edge and the reverse edge
+                            // Aplica o fluxo na borda reversa
                             for(var i=0;i<path.length;i++) {
                                 path[i][0].flow += flow;
                                 path[i][0].reverseEdge.flow -= flow;
@@ -407,7 +403,7 @@
                             path = this.findPath(source, sink, []);
                         }
                         var sum = 0;
-                        console.log(this.edges)
+                        
                         for(var i=0;i<this.edges[source].length;i++){
                             sum += this.edges[source][i].flow;
 
@@ -429,7 +425,7 @@
                 _vertices = this.$el.querySelectorAll('.vertice');
                 var i = 0;
                 self.vertices.forEach(function (vertice) {
-                    //preenche vetor de cores
+                    
                     var qtd = [];
                     qtd = [].filter.call(_arestas, a => {
                         return (a.__vue__.from.verticeId === vertice.id || a.__vue__.to.verticeId === vertice.id);
